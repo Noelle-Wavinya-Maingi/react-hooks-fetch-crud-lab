@@ -17,9 +17,42 @@ function QuestionList() {
 
   console.log(questions);
  
+  function handleDelete (id) {
+    fetch (`http://localhost:4000/questions/${id}`, {
+      method: "DELETE",
+      headers: {"Content-Type" : "application/json"}
+    })
+    .then((res) => res.json())
+    .then(() => {
+      const deleteQuestions = questions.filter((item) => item.id !== id)
+      setQuestions(deleteQuestions)
+    })
+  }
+
+  function handleUpdate (id, correctIndex) {
+    fetch(`http://localhost:4000/questions/${id}`, {
+      method: "PATCH",
+      headers: {"Content-Type" : "application/json"},
+      body: JSON.stringify({
+        correctIndex
+      }),
+    })
+    .then((res) => res.json())
+    .then((updateQuestions) => 
+    {
+      const updateQuestion = questions.map((item) => {
+        if(item.id !== updateQuestions.id)
+          return item
+        
+        return updateQuestions;
+      })
+      setQuestions(updateQuestion)
+    }
+     )
+  }
   
 const displayQues = questions.map((question) => 
-  <QuestionItem key={question.id} question={question} />)
+  <QuestionItem key={question.id} question={question} onDelete={handleDelete} onUpdate={handleUpdate}/>)
   
 console.log(displayQues);
   return (
